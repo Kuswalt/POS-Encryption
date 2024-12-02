@@ -9,11 +9,22 @@
     category: string;
     is_available?: boolean;
   };
+  export let onAddToCart: (product: any) => void;
 
-  $: isAvailable = $productAvailability[product.product_id] ?? true;
+  $: isAvailable = $productAvailability[product.product_id] ?? false;
+
+  async function handleAddToCart() {
+    if (!isAvailable) {
+      return; // Prevent adding unavailable items
+    }
+    onAddToCart(product);
+  }
 </script>
 
-<div class="item-card {!isAvailable ? 'unavailable' : ''}">
+<div class="item-card {!isAvailable ? 'unavailable' : ''}" 
+     on:click={handleAddToCart} 
+     role="button" 
+     tabindex="0">
   <div class="image-container">
     <img 
       src={product.image ? `uploads/${product.image}` : 'placeholder.jpg'} 
@@ -68,6 +79,7 @@
   .unavailable {
     opacity: 0.7;
     pointer-events: none;
+    cursor: not-allowed;
   }
 
   .unavailable-badge {
@@ -81,5 +93,6 @@
     border-radius: 4px;
     font-weight: bold;
     text-transform: uppercase;
+    z-index: 2;
   }
 </style>

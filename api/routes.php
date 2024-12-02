@@ -442,16 +442,16 @@ try {
                     }
                     break;
                 case 'check-ingredient-availability':
-                    if (!isset($_GET['product_id']) || !isset($_GET['quantity'])) {
-                        echo json_encode([
-                            "status" => false,
-                            "message" => "Product ID and quantity are required"
-                        ]);
-                        break;
+                    $product_id = $_GET['product_id'] ?? null;
+                    $quantity = $_GET['quantity'] ?? 1;
+                    
+                    if ($product_id) {
+                        $result = $get->checkIngredientAvailability($product_id, $quantity);
+                        // Encrypt the response
+                        $encryptedResponse = $encryption->encrypt($result);
+                        echo json_encode(["status" => true, "data" => $encryptedResponse]);
+                        exit;
                     }
-                    $product_id = $_GET['product_id'];
-                    $quantity = $_GET['quantity'];
-                    echo json_encode($get->checkIngredientAvailability($product_id, $quantity));
                     break;
                 case 'get-batch-product-ingredients':
                     $product_ids = json_decode($_GET['product_ids']);
@@ -464,6 +464,16 @@ try {
                         "status" => true,
                         "key" => "692317ec55c6bca60beccb571fb9591809ecebdc5428216ac267f2481c054617"
                     ]);
+                    break;
+                case 'test-ingredient-availability':
+                    $product_id = $_GET['product_id'] ?? null;
+                    $quantity = $_GET['quantity'] ?? 1;
+                    
+                    if ($product_id) {
+                        $result = $get->checkIngredientAvailability($product_id, $quantity);
+                        echo json_encode($result);
+                        exit;
+                    }
                     break;
                 default:
                     echo json_encode(["error" => "Invalid request"]);
